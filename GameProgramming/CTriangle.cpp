@@ -1,28 +1,28 @@
-#include "CTriangle.h"
-#include "glut.h"
+#include"CTriangle.h"
+#include"glut.h"
 
 //頂点座標設定
-//SetVertex(頂点1, 頂点2, 頂点3)
-void CTriangle::SetVertex(const CVector &v0, const CVector &v1, const CVector &v2) {
+//SetVertex(頂点1,頂点2,頂点3)
+void CTriangle::SetVertex(const CVector &v0, const CVector &v1, const CVector &v2){
 	mV[0] = v0;
 	mV[1] = v1;
 	mV[2] = v2;
 }
 
 //法線設定
-//SetNormal(法線ベクトル)
-void CTriangle::SetNormal(const CVector &n) {
+//Set CTriangle(法線ベクトル)
+void CTriangle::SetNormal(const CVector &n){
 	mN[0] = mN[1] = mN[2] = n;
 }
-//SetNormal(法線ベクトル1, 法線ベクトル2, 法線ベクトル3)
-void CTriangle::SetNormal(const CVector &v0, const CVector &v1, const CVector &v2) {
+
+void CTriangle::SetNormal(const CVector&v0, const CVector&v1, const CVector&v2){
 	mN[0] = v0;
 	mN[1] = v1;
 	mN[2] = v2;
 }
 
 //描画
-void CTriangle::Render() {
+void CTriangle::Render(){
 	glBegin(GL_TRIANGLES);
 	glNormal3f(mN[0].mX, mN[0].mY, mN[0].mZ);
 	glTexCoord2f(mUv[0].mX, mUv[0].mY);
@@ -38,9 +38,9 @@ void CTriangle::Render() {
 
 //描画
 //Render(行列)
-void CTriangle::Render(const CMatrix &m)
+void CTriangle::Render(const CMatrix&m)
 {
-	CVector mV[3], mN[3];
+	CVector mV[3] , mN[3];
 	mV[0] = CTriangle::mV[0] * m;
 	mV[1] = CTriangle::mV[1] * m;
 	mV[2] = CTriangle::mV[2] * m;

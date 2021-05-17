@@ -1,71 +1,135 @@
 #include "CSceneGame.h"
-//
-#include "CCamera.h"
-//
-#include "CUtil.h"
-//
-#include "CRes.h"
+//OpenGL
+#include"glut.h"
+#include"CTriangle.h"
+#include"CKey.h"
+#include"CModel.h"
+#include"CMatrix.h"
+#include"CTransform.h"
+#include"CTaskManager.h"
+#include"CEnemy.h"
+#include"CEnemy2.h"
+#include"CCollisionManager.h"
+#include"CBillBoard.h"
+#include"CCamera.h"
 
-#include "CKey.h"
+#include"CObstacle.h"
+#include"CObstacle2.h"
 
-CMatrix Matrix;
+//CSモデル
+CModel mModelIC5;
 
-CSceneGame::~CSceneGame() {
-
-}
+CModel mObstacle1;
 
 void CSceneGame::Init() {
-	//3Dモデルファイルの読み込み
-	CRes::sModelX.Load(MODEL_FILE);
-	//テキストフォントの読み込みと設定
-	mFont.LoadTexture("FontG.tga", 1, 4096 / 64);
+	mEye = CVector(1.0f, 2.0f, 3.0f);
+	//モデルファイルデータの入力
+	mModel.Load("sphere.obj", "sphere.mtl");
 
+	mBackGround.Load("sky.obj", "sky.mtl");
+
+	CMatrix matrix;
+	matrix.Print();
+
+	mBackGroundMatrix.Translate(0.0f, 0.0f, -500.0f);
+
+	mPlayer.mpModel = &mModel;
+	mPlayer.mScale = CVector(1.5f, 1.5f, 1.5f); //拡大縮小
+	mPlayer.mPosition = CVector(3.0f, 0.0f, -3.0f)*mBackGroundMatrix; //位置座標
+	mPlayer.mRotation = CVector(0.0f, 180.0f, 0.0f); //回転
+
+	//CSモデルの読み込み
+	mModelIC5.Load("c5.obj", "c5.mtl");
+
+	//敵機のインスタンス作成
+	/*
+	new CEnemy(&mModelIC5, CVector(0.0f, 10.0f, -100.0f)*mBackGroundMatrix, CVector(), CVector(0.1f, 0.1f, 0.1f));
+	new CEnemy(&mModelIC5, CVector(30.0f, 10.0f, -130.0f)*mBackGroundMatrix, CVector(), CVector(0.1f, 0.1f, 0.1f));
+
+	new CEnemy2(CVector(-5.0f, 1.0f, -10.0f)*mBackGroundMatrix, CVector(), CVector(0.1f, 0.1f, 0.1f));
+	new CEnemy2(CVector(5.0f, 1.0f, -10.0f)*mBackGroundMatrix, CVector(), CVector(0.1f, 0.1f, 0.1f));
+	*/
+
+	new CObstacle(CVector(3.0f, -3.0f, -80.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 1.0f, 1.0f));
+	new CObstacle2(CVector(3.0f, -3.0f, -150.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 1.0f, 1.0f));
+
+	//ビルボードの作成
+	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);
+
+	//三角コライダの確認
+	mColliderTriangle.Set(NULL, NULL, CVector(-50.0f, 0.0f, -50.0f), CVector(-50.0f, 0.0f, 50.0f), CVector(50.0f, 0.0f, -50.0f));
+	mColliderTriangle2.Set(NULL, NULL, CVector(50.0f, 0.0f, -50.0f), CVector(-50.0f, 0.0f, 50.0f), CVector(50.0f, 0.0f, 50.0f));
+
+	//背景モデルから三角コライダを生成
+	//親インスタンスと親行列はなし
+	mColliderMesh.Set(NULL, &mBackGroundMatrix, &mBackGround);
 }
 
-
 void CSceneGame::Update() {
-	//カメラのパラメータを作成する
-	CVector e, c, u;//視点、注視点、上方向
-	//視点を求める
-	e = CVector(1.0f, 2.0f, 10.0f);
-	//注視点を求める
-	c = CVector();
-	//上方向を求める
-	u = CVector(0.0f, 1.0f, 0.0f);
+	//タスクマネージャの更新
+	CTaskManager::Get()->Update();
+	//コリジョンマネージャの衝突処理
+	//CCollisionManager::Get()->Collision();
+	CTaskManager::Get()->TaskCollision();
 
+	//頂点1,頂点2,頂点3,法線データの作成
+	CVector v0, v1, v2, n;
+
+	//法線を上向きで設定する
+	n.mX = 0.0f; n.mY = 1.0f; n.mZ = 0.0f;
+	//頂点1の座標を設定する
+	v0.mX = 0.0f; v0.mY = 0.0f; v0.mZ = 0.5f;
+	//頂点2の座標を設定する
+	v1.mX = 1.0f; v1.mY = 0.0f; v1.mZ = 0.0f;
+	//頂点3の座標を設定する
+	v2.mX = 0.0f; v2.mY = 0.0f; v2.mZ = -0.5f;
+
+	//視点の移動
+	if (CKey::Push('J'))
+	{
+		mEye.mX -= 0.1f;
+	}
+	if (CKey::Push('L'))
+	{
+		mEye.mX += 0.1;
+	}
+	if (CKey::Push('I'))
+	{
+		mEye.mZ -= 0.1f;
+	}
+	if (CKey::Push('K'))
+	{
+		mEye.mZ += 0.1;
+	}
+	if (CKey::Push('O'))
+	{
+		mEye.mY += 0.1;
+	}
+	if (CKey::Push('M'))
+	{
+		mEye.mY -= 0.1;
+	}
+	
+	//カメラのパラメータを作成する
+	CVector e, c, u; //視点、注視点、上方向
+	//視点を求める
+	e = CVector(0.0f, 3.0f, -5.0f)*mPlayer.mMatrix;
+	//注視点を求める
+	c = mPlayer.mPosition;
+	//上方向を求める
+	u = CVector(0, 1, 0)*mPlayer.mMatrixRotate;
+	//カメラの設定
+	//glLookAt(e.mX,e.mY,e.mZ,c.mX,c.mY,c.mZ,u.mX,u.mY,u.mZ)
 	//カメラクラスの設定
 	Camera.Set(e, c, u);
 	Camera.Render();
+	
+	mBackGround.Render(mBackGroundMatrix);
+	
+	//タスクリストの削除
+	CTaskManager::Get()->Delete();
+	//タスクマネージャの描画
+	CTaskManager::Get()->Render();
 
-	//X軸+回転
-	if (CKey::Push('K')){
-		Matrix = Matrix*CMatrix().RotateX(1);
-	}
-	//Y軸+回転
-	if (CKey::Push('L')){
-		Matrix = Matrix*CMatrix().RotateY(1);
-	}
-	//X軸-回転
-	if (CKey::Push('I')){
-		Matrix = Matrix*CMatrix().RotateX(-1);
-	}
-	//Y軸-回転
-	if (CKey::Push('J')){
-		Matrix = Matrix*CMatrix().RotateY(-1);
-	}
-	//行列設定
-	glMultMatrixf(Matrix.mF);
-	//モデル描画
-	CRes::sModelX.Render();
-
-	//2D描画開始
-	CUtil::Start2D(0, 800, 0, 600);
-
-	mFont.DrawString("3D PROGRAMMING", 20, 20, 10, 12);
-
-	//2Dの描画終了
-	CUtil::End2D();
-
-	return;
+	CCollisionManager::Get()->Render();
 }
-

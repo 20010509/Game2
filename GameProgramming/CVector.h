@@ -1,24 +1,24 @@
 #ifndef CVECTOR_H
 #define CVECTOR_H
-#include "CMatrix.h"
+#include"CMatrix.h"
 /*
 ベクトルクラス
 ベクトルデータを扱います
 */
-class CVector {
+class CVector{
 public:
 	//3D各軸での値を設定
 	float mX, mY, mZ;
 	//各軸での値の設定
-	//Set(X座標, Y座標, Z座標)
+	//Set(X座標,Y座標,Z座標)
 	void Set(float x, float y, float z);
 	//デフォルトコンストラクタ
 	CVector();
 	//コンストラクタ
-	//CVector(X座標, Y座標, Z座標)
+	//CVector(X座標,Y座標,Z座標)
 	CVector(float x, float y, float z);
-	//CVector * CMatrixの結果をCVectorで返す
-	CVector operator*(const CMatrix &m);
+	//CVector*CMatrixの結果をCVectorで返す
+	CVector operator*(const CMatrix&m);
 	//-演算子のオーバーロード
 	//CVector - CVector の演算結果を返す
 	CVector operator-(const CVector &v);
@@ -36,9 +36,8 @@ public:
 	//正規化
 	//大きさ1のベクトルを返す
 	CVector Normalize();
-	//+演算しのオーバーロード
-	//CVector + CVector の演算結果を返す
+	//+演算子のオーバーロード
+	//CVector + CVectorの演算結果を返す
 	CVector operator+(const CVector &v);
-
 };
 #endif

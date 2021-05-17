@@ -1,8 +1,8 @@
-#include "CUtil.h"
-#include "glut.h"
+#include"CUtil.h"
+#include"glut.h"
 
 //2D描画スタート
-//Start2D(左座標, 右座標, 下座標, 上座標)
+//Star2D(左座標、右座標、下座標、上座標)
 void CUtil::Start2D(float left, float right, float bottom, float top)
 {
 	//モデルビュー行列の退避
