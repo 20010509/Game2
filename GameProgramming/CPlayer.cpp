@@ -38,7 +38,7 @@ CPlayer::CPlayer()
 //更新処理
 void CPlayer::Update(){
 	//Aキー入力で左レーンへ移動
-	if (CKey::Once('A') && mNowLane > -1&&mSideMoveFlagR==false){
+	if (CKey::Once('A') && mNowLane > -1 && mSideMoveFlagR == false && mSideMoveFlagL == false){
 		//Y軸の回転値を増加
 		//mRotation.mY += 1;
 		//mPosition.mX -= 5;
@@ -56,7 +56,7 @@ void CPlayer::Update(){
 		}
 	}
 	//Dキー入力で右レーンへ移動
-	if (CKey::Once('D') && mNowLane < 1&&mSideMoveFlagL==false){
+	if (CKey::Once('D') && mNowLane < 1 && mSideMoveFlagL == false && mSideMoveFlagR == false){
 		//Y軸の回転値を増加
 		//mRotation.mY -= 1;
 		//mPosition.mX += 5;

@@ -23,7 +23,7 @@ CObstacle2::CObstacle2()
 	}
 	//モデルのポインタ設定
 	mpModel = &mModel;
-	//mColSearch.mTag = CCollider::ESEARCH; //タグ設定
+	mColSearch.mTag = CCollider::ESEARCH; //タグ設定
 }
 
 //コンストラクタ
@@ -48,10 +48,10 @@ CObstacle2::CObstacle2(const CVector& position, const CVector& rotation, const C
 void CObstacle2::Update(){
 	if (mRotateFlag == true && mStopFlag == false){
 		mRotateSpeed += 0.2f;
-		mPosition.mZ += mRotateSpeed;
-		if (mPosition.mZ >= 90.0f){
+		mRotation.mZ += mRotateSpeed;
+		if (mRotation.mZ >= 90.0f){
 			mStopFlag = true;
-			mPosition.mZ = 90.0f;
+			mRotation.mZ = 90.0f;
 		}
 	}
 

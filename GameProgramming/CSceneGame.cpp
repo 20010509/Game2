@@ -51,7 +51,7 @@ void CSceneGame::Init() {
 	*/
 
 	new CObstacle(CVector(3.0f, -3.0f, -80.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 1.0f, 1.0f));
-	new CObstacle2(CVector(3.0f, -3.0f, -150.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 1.0f, 1.0f));
+	new CObstacle2(CVector(4.5f, -1.0f, -150.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 1.0f, 1.0f));
 
 	//ビルボードの作成
 	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);
