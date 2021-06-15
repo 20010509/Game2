@@ -8,17 +8,17 @@
 
 #define GRAVITY 0.03f			//重力
 #define JUMPPOWER 0.6f			//ジャンプ力
-#define RUNSPEED 0.8f			//前方へ移動するスピード
-#define SIDEMOVESPEED 0.375f	//横レーンへ移動するスピード
+#define RUNSPEED 0.5f			//前方へ移動するスピード
+#define SIDEMOVESPEED 0.4f		//横レーンへ移動するスピード
 #define INITIALIZE 0			//値を初期化
-#define SIDEMOVECOUNT 12		//隣のレーンへ移動する時間(フレーム)
+#define SIDEMOVECOUNT 9			//隣のレーンへ移動する時間(フレーム)
 #define SLIDINGCOUNT 30			//スライディングの持続時間
 
 CPlayer::CPlayer()
-:mLine(this, &mMatrix, CVector(0.0f, 0.0f, -0.75f), CVector(0.0f, 0.0f, 0.75f))
-,mLine2(this, &mMatrix, CVector(0.0f, 0.75f, 0.0f), CVector(0.0f, -0.75f, 0.0f))
-,mLine3(this, &mMatrix, CVector(0.75f, 0.0f, 0.0f), CVector(-0.75f, 0.0f, 0.0f))
-,mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f),1.5f)
+:mLine(this, &mMatrix, CVector(0.0f, 0.0f, -1.0f), CVector(0.0f, 0.0f, 1.0f))
+,mLine2(this, &mMatrix, CVector(0.0f, 1.0f, 0.0f), CVector(0.0f, -1.0f, 0.0f))
+,mLine3(this, &mMatrix, CVector(1.0f, 0.0f, 0.0f), CVector(-1.0f, 0.0f, 0.0f))
+,mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f),1.0f)
 , mJumpPower(INITIALIZE)
 , mJumpFlag(false)
 , mSlidingFlag(false)
@@ -83,11 +83,11 @@ void CPlayer::Update(){
 	}
 	if (mSlidingFlag == true){
 		mSlidingCount++;
-		mScale = CVector(1.5f, 0.75f, 1.5f); //拡大縮小
+		mScale = CVector(1.0f, 0.5f, 1.0f); //拡大縮小
 		if (mSlidingCount > SLIDINGCOUNT){
 			mSlidingFlag = false;
 			mSlidingCount = INITIALIZE;
-			mScale = CVector(1.5f, 1.5f, 1.5f); //拡大縮小
+			mScale = CVector(1.0f, 1.0f, 1.0f); //拡大縮小
 		}
 	}
 
@@ -112,10 +112,10 @@ void CPlayer::Update(){
 	mPosition.mZ -= RUNSPEED;
 
 	/*if (CKey::Push(VK_UP)){
-		mPosition.mZ -= 0.5;
+		mPosition.mZ -= RUNSPEED;
 	}
 	if (CKey::Push(VK_DOWN)){
-		mPosition.mZ += 0.5;
+		mPosition.mZ += RUNSPEED;
 	}*/
 
 	//上矢印キー入力で前進
@@ -131,6 +131,23 @@ void CPlayer::Update(){
 		bullet->mRotation = mRotation;
 		bullet->Update();*/
 		//TaskManager.Add(bullet);
+	}
+
+	if (mNowLane == -1 && mSideMoveFlagL == false && mSideMoveFlagR == false){
+		mPosition.mX = 0;
+	}
+	else if (mNowLane == 0 && mSideMoveFlagL == false && mSideMoveFlagR == false){
+		mPosition.mX = 4;
+	}
+	else if (mNowLane == 1 && mSideMoveFlagL == false && mSideMoveFlagR == false){
+		mPosition.mX = 8;
+	}
+
+	//位置リセット用
+	if (CKey::Once('R')){
+		mPosition = CVector(4.0f, 0.0f, -310.0f);
+		mNowLane = 0;
+		mJumpPower = INITIALIZE;
 	}
 	
 	//CTransformの更新
@@ -196,6 +213,12 @@ void CPlayer::Render()
 
 	sprintf(buf, "RY:%7.2f", mRotation.mY);
 	mText.DrawString(buf, 100, -100, 8, 16);
+
+
+
+	sprintf(buf, "RX:%7.2f", mPosition.mX);
+	//文字列の描画
+	mText.DrawString(buf, 100, -70, 8, 16);
 
 	//2Dの描画終了
 	CUtil::End2D();

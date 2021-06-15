@@ -1,20 +1,17 @@
-#include "CObstacle.h"
+#include "CObstacle3.h"
 #include "CTaskManager.h"
 #include "CCollisionManager.h"
 #include "CEffect.h"
 #include "CBullet.h"
 
-#define OBJ "needle.obj" //モデルのファイル
-#define MTL "needle.mtl" //モデルのマテリアルファイル
+#define OBJ "sphere.obj" //モデルのファイル
+#define MTL "sphere.mtl" //モデルのマテリアルファイル
 
-CModel CObstacle::mModel; //モデルデータの作成
+CModel CObstacle3::mModel; //モデルデータの作成
 
 //デフォルトコンストラクタ
-CObstacle::CObstacle()
-: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 30.0f)
-, mRiseFlag(false)
-, mStopFlag(false)
-, mRiseSpeed(0)
+CObstacle3::CObstacle3()
+//: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, -10.0f), 30.0f)
 {
 	//モデルがない時は読み込む
 	if (mModel.mTriangles.size() == 0)
@@ -23,13 +20,13 @@ CObstacle::CObstacle()
 	}
 	//モデルのポインタ設定
 	mpModel = &mModel;
-	mColSearch.mTag = CCollider::ESEARCH; //タグ設定
+	//mColSearch.mTag = CCollider::ESEARCH; //タグ設定
 }
 
 //コンストラクタ
 //CEnemy(位置、回転、拡縮)
-CObstacle::CObstacle(const CVector& position, const CVector& rotation, const CVector& scale)
-:CObstacle()
+CObstacle3::CObstacle3(const CVector& position, const CVector& rotation, const CVector& scale)
+:CObstacle3()
 {
 	//位置、回転、拡縮を設定する
 	mPosition = position; //位置の設定
@@ -45,22 +42,18 @@ CObstacle::CObstacle(const CVector& position, const CVector& rotation, const CVe
 }
 
 //更新処理
-void CObstacle::Update(){
-	if (mRiseFlag == true&&mStopFlag==false){
-		mRiseSpeed += 0.2f;
-		mPosition.mY += mRiseSpeed;
-		if (mPosition.mY >= -1.0f){
-			mStopFlag = true;
-			mPosition.mY = -1.0f;
-		}
-	}
+void CObstacle3::Update(){
+	
+	mPosition.mZ += 0.1;
+
+	mRotation.mX += 5;
 
 	CTransform::Update();
 }
 
 //衝突処理
 //Collider(コライダ1、コライダ2)
-void CObstacle::Collision(CCollider *m, CCollider *o){
+void CObstacle3::Collision(CCollider *m, CCollider *o){
 	//相手がサーチの時は戻る
 	if (o->mTag == CCollider::ESEARCH)
 	{
@@ -78,7 +71,7 @@ void CObstacle::Collision(CCollider *m, CCollider *o){
 				//衝突しているとき
 				if (CCollider::Collision(m, o))
 				{
-					mRiseFlag = true;
+					
 				}
 			}
 		}
@@ -86,7 +79,7 @@ void CObstacle::Collision(CCollider *m, CCollider *o){
 	}
 }
 
-void CObstacle::TaskCollision()
+void CObstacle3::TaskCollision()
 {
 	mColSearch.ChangePriority();
 	CCollisionManager::Get()->Collision(&mColSearch, COLLISIONRANGE);

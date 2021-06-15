@@ -11,7 +11,7 @@ CModel CObstacle2::mModel; //モデルデータの作成
 
 //デフォルトコンストラクタ
 CObstacle2::CObstacle2()
-: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, -10.0f), 30.0f)
+: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 30.0f)
 , mRotateFlag(false)
 , mStopFlag(false)
 , mRotateSpeed(0)

@@ -15,6 +15,11 @@
 
 #include"CObstacle.h"
 #include"CObstacle2.h"
+#include"CObstacle3.h"
+#include"CObstacle4.h"
+
+#include"CRoad.h"
+#include"CWall.h"
 
 //CSモデル
 CModel mModelIC5;
@@ -34,8 +39,8 @@ void CSceneGame::Init() {
 	mBackGroundMatrix.Translate(0.0f, 0.0f, -500.0f);
 
 	mPlayer.mpModel = &mModel;
-	mPlayer.mScale = CVector(1.5f, 1.5f, 1.5f); //拡大縮小
-	mPlayer.mPosition = CVector(3.0f, 0.0f, -3.0f)*mBackGroundMatrix; //位置座標
+	mPlayer.mScale = CVector(1.0f, 1.0f, 1.0f); //拡大縮小
+	mPlayer.mPosition = CVector(4.0f, 3.0f, 190.0f)*mBackGroundMatrix; //位置座標
 	mPlayer.mRotation = CVector(0.0f, 180.0f, 0.0f); //回転
 
 	//CSモデルの読み込み
@@ -50,8 +55,32 @@ void CSceneGame::Init() {
 	new CEnemy2(CVector(5.0f, 1.0f, -10.0f)*mBackGroundMatrix, CVector(), CVector(0.1f, 0.1f, 0.1f));
 	*/
 
-	new CObstacle(CVector(3.0f, -3.0f, -80.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 1.0f, 1.0f));
-	new CObstacle2(CVector(4.5f, -1.0f, -150.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 1.0f, 1.0f));
+	//障害物
+	//下から出るトゲ
+	new CObstacle(CVector(0.0f, -3.75f, 70.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
+	new CObstacle(CVector(4.0f, -3.75f, 70.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
+	new CObstacle(CVector(8.0f, -3.75f, 70.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
+
+	//倒れる柱
+	new CObstacle2(CVector(10.0f, -1.0f, 120.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 2.0f, 1.5f));
+
+	//転がってくる球
+	new CObstacle3(CVector(6.0f, 3.0f, 0.0f)*mBackGroundMatrix, CVector(), CVector(4.0f, 4.0f, 4.0f));
+
+	//ブロック
+	//new CObstacle4(CVector(8.0f, -1.0f, -30.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.0f, 1.75f));
+	new CObstacle4(CVector(0.0f, -1.0f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.0f, 1.75f));
+	new CObstacle4(CVector(4.0f, -1.0f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
+
+	//new CObstacle4(CVector(4.0f, 1.0f, -30.0f)*mBackGroundMatrix, CVector(), CVector(7.0f, 3.5f, 1.0f));
+
+	//壁、天井
+	new CWall(CVector(-4.0f, -1.0f, 100.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 6.0f, 300.0f));
+	new CWall(CVector(12.0f, -1.0f, 100.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 6.0f, 300.0f));
+	new CWall(CVector(4.0f, 11.0f, 100.0f)*mBackGroundMatrix, CVector(), CVector(9.0f, 1.0f, 300.0f));
+
+	//道
+	//new CRoad(CVector(4.0f, 0.0f, 0.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 1.0f, 50.0f));
 
 	//ビルボードの作成
 	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);
