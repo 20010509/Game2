@@ -18,6 +18,7 @@
 #include"CObstacle3.h"
 #include"CObstacle4.h"
 
+#include"COrnament.h"
 #include"CRoad.h"
 #include"CWall.h"
 
@@ -57,21 +58,53 @@ void CSceneGame::Init() {
 
 	//障害物
 	//下から出るトゲ
-	new CObstacle(CVector(0.0f, -3.75f, 70.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
-	new CObstacle(CVector(4.0f, -3.75f, 70.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
-	new CObstacle(CVector(8.0f, -3.75f, 70.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
+	new CObstacle(CVector(0.0f, -3.75f, 85.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
+	new CObstacle(CVector(4.0f, -3.75f, 85.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
+	new CObstacle(CVector(8.0f, -3.75f, 85.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
 
-	//倒れる柱
-	new CObstacle2(CVector(10.0f, -1.0f, 120.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 2.0f, 1.5f));
+	//柱
+	//0=倒れない柱　1=倒れる柱
+	int PillarR[13] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	for (int i = 0; i < 13; i++){
+		if (PillarR[i] == 0){
+			new COrnament(CVector(10.0f, -1.0f, i*-30.0f + 180.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 2.0f, 1.5f));
+		}
+		if (PillarR[i] == 1){
+			new CObstacle2(CVector(10.0f, -1.0f, i*-30.0f + 180.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 2.0f, 1.5f));
+		}
+	}
+
+	int PillarL[13] = { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
+
+	for (int i = 0; i < 13; i++){
+		if (PillarL[i] == 0){
+			new COrnament(CVector(-2.0f, -1.0f, i*-30.0f + 180.0f)*mBackGroundMatrix, CVector(0.0f,180.0f,0.0f), CVector(1.5f, 2.0f, 1.5f));
+		}
+		if (PillarL[i] == 1){
+			new CObstacle2(CVector(-2.0f, -1.0f, i*-30.0f + 180.0f)*mBackGroundMatrix, CVector(0.0f,180.0f,0.0f), CVector(1.5f, 2.0f, 1.5f));
+		}
+	}
 
 	//転がってくる球
-	new CObstacle3(CVector(6.0f, 3.0f, 0.0f)*mBackGroundMatrix, CVector(), CVector(4.0f, 4.0f, 4.0f));
+	new CObstacle3(CVector(6.0f, 3.0f, -180.0f)*mBackGroundMatrix, CVector(), CVector(4.0f, 4.0f, 4.0f));
 
 	//ブロック
-	//new CObstacle4(CVector(8.0f, -1.0f, -30.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.0f, 1.75f));
-	new CObstacle4(CVector(0.0f, -1.0f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.0f, 1.75f));
+	new CObstacle4(CVector(0.0f, -1.0f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
 	new CObstacle4(CVector(4.0f, -1.0f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
+	new CObstacle4(CVector(8.0f, -1.0f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
 
+	new CObstacle4(CVector(4.0f, -1.0f, 120.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.5f, 1.75f));
+	new CObstacle4(CVector(8.0f, -1.0f, 120.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.5f, 1.75f));
+
+	new CObstacle4(CVector(0.0f, -1.0f, 50.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.5f, 1.75f));
+	new CObstacle4(CVector(4.0f, -1.0f, 50.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.5f, 1.75f));
+	new CObstacle4(CVector(8.0f, -1.0f, 50.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
+
+	new CObstacle4(CVector(0.0f, -1.0f, -40.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.5f, 1.75f));
+	new CObstacle4(CVector(4.0f, -1.0f, -40.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
+	new CObstacle4(CVector(8.0f, -1.0f, -40.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.5f, 1.75f));
+	
 	//new CObstacle4(CVector(4.0f, 1.0f, -30.0f)*mBackGroundMatrix, CVector(), CVector(7.0f, 3.5f, 1.0f));
 
 	//壁、天井
@@ -142,7 +175,7 @@ void CSceneGame::Update() {
 	//カメラのパラメータを作成する
 	CVector e, c, u; //視点、注視点、上方向
 	//視点を求める
-	e = CVector(0.0f, 3.0f, -5.0f)*mPlayer.mMatrix;
+	e = CVector(0.0f, 2.5f, -5.0f)*mPlayer.mMatrix;
 	//注視点を求める
 	c = mPlayer.mPosition;
 	//上方向を求める

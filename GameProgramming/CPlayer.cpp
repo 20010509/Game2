@@ -6,7 +6,7 @@
 #include"CCollisionManager.h"
 #include "CUtil.h"
 
-#define GRAVITY 0.03f			//重力
+#define GRAVITY 0.035f			//重力
 #define JUMPPOWER 0.6f			//ジャンプ力
 #define RUNSPEED 0.5f			//前方へ移動するスピード
 #define SIDEMOVESPEED 0.4f		//横レーンへ移動するスピード
@@ -28,7 +28,8 @@ CPlayer::CPlayer()
 , mSideMoveFlagR(false)
 , mSideMoveCount(INITIALIZE)
 , mNowLane(INITIALIZE)
-, mSurface(INITIALIZE)
+//, mSurface(INITIALIZE)
+, mHp(INITIALIZE)
 {
 	//テクスチャファイルの読み込み(1行64列)
 	mText.LoadTexture("FontWhite.tga", 1, 64);
@@ -102,8 +103,7 @@ void CPlayer::Update(){
 	mJumpPower -= GRAVITY;
 
 	if (mPosition.mY <= 0){
-		mSurface = mPosition.mY*-1;
-		mPosition.mY += mSurface;
+		mPosition.mY += mPosition.mY*-1;
 		mJumpFlag = false;
 		mJumpPower = INITIALIZE;
 	}
@@ -167,6 +167,7 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 			mPosition = mPosition - adjust*-1;
 			//行列の更新
 			CTransform::Update();
+			mHp--;
 		}
 		break;
 	}
@@ -219,6 +220,10 @@ void CPlayer::Render()
 	sprintf(buf, "RX:%7.2f", mPosition.mX);
 	//文字列の描画
 	mText.DrawString(buf, 100, -70, 8, 16);
+
+	sprintf(buf, "%d", mHp);
+	//文字列の描画
+	mText.DrawString(buf, 100, -30, 8, 16);
 
 	//2Dの描画終了
 	CUtil::End2D();

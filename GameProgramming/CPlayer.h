@@ -24,7 +24,9 @@ private:
 
 	int mNowLane;				//プレイヤーが今走っているレーン
 
-	float mSurface;				//めり込んだ分戻す用
+	//float mSurface;				//めり込んだ分戻す用
+
+	int mHp;
 
 public:
 	//更新処理

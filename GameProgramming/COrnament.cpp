@@ -1,4 +1,4 @@
-#include "CObstacle2.h"
+#include "COrnament.h"
 #include "CTaskManager.h"
 #include "CCollisionManager.h"
 #include "CEffect.h"
@@ -7,14 +7,11 @@
 #define OBJ "sirclepillar.obj" //モデルのファイル
 #define MTL "sirclepillar.mtl" //モデルのマテリアルファイル
 
-CModel CObstacle2::mModel; //モデルデータの作成
+CModel COrnament::mModel; //モデルデータの作成
 
 //デフォルトコンストラクタ
-CObstacle2::CObstacle2()
-: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 40.0f)
-, mRotateFlag(false)
-, mStopFlag(false)
-, mRotateSpeed(0)
+COrnament::COrnament()
+//: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 30.0f)
 {
 	//モデルがない時は読み込む
 	if (mModel.mTriangles.size() == 0)
@@ -23,13 +20,13 @@ CObstacle2::CObstacle2()
 	}
 	//モデルのポインタ設定
 	mpModel = &mModel;
-	mColSearch.mTag = CCollider::ESEARCH; //タグ設定
+	//mColSearch.mTag = CCollider::ESEARCH; //タグ設定
 }
 
 //コンストラクタ
 //CEnemy(位置、回転、拡縮)
-CObstacle2::CObstacle2(const CVector& position, const CVector& rotation, const CVector& scale)
-:CObstacle2()
+COrnament::COrnament(const CVector& position, const CVector& rotation, const CVector& scale)
+:COrnament()
 {
 	//位置、回転、拡縮を設定する
 	mPosition = position; //位置の設定
@@ -41,26 +38,18 @@ CObstacle2::CObstacle2(const CVector& position, const CVector& rotation, const C
 	CTaskManager::Get()->Remove(this); //削除して
 	CTaskManager::Get()->Add(this); //追加する
 
-	mColliderMesh.Set(NULL, &mMatrix, mpModel);
+	///mColliderMesh.Set(NULL, &mMatrix, mpModel);
 }
 
 //更新処理
-void CObstacle2::Update(){
-	if (mRotateFlag == true && mStopFlag == false){
-		mRotateSpeed += 0.15f;
-		mRotation.mZ += mRotateSpeed;
-		if (mRotation.mZ >= 90.0f){
-			mStopFlag = true;
-			mRotation.mZ = 90.0f;
-		}
-	}
+void COrnament::Update(){
 
 	CTransform::Update();
 }
 
 //衝突処理
 //Collider(コライダ1、コライダ2)
-void CObstacle2::Collision(CCollider *m, CCollider *o){
+void COrnament::Collision(CCollider *m, CCollider *o){
 	//相手がサーチの時は戻る
 	if (o->mTag == CCollider::ESEARCH)
 	{
@@ -78,7 +67,7 @@ void CObstacle2::Collision(CCollider *m, CCollider *o){
 				//衝突しているとき
 				if (CCollider::Collision(m, o))
 				{
-					mRotateFlag = true;
+					
 				}
 			}
 		}
@@ -86,8 +75,8 @@ void CObstacle2::Collision(CCollider *m, CCollider *o){
 	}
 }
 
-void CObstacle2::TaskCollision()
+void COrnament::TaskCollision()
 {
-	mColSearch.ChangePriority();
-	CCollisionManager::Get()->Collision(&mColSearch, COLLISIONRANGE);
+	//mColSearch.ChangePriority();
+	//CCollisionManager::Get()->Collision(&mColSearch, COLLISIONRANGE);
 }

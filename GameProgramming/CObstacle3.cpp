@@ -44,7 +44,7 @@ CObstacle3::CObstacle3(const CVector& position, const CVector& rotation, const C
 //çXêVèàóù
 void CObstacle3::Update(){
 	
-	mPosition.mZ += 0.1;
+	mPosition.mZ += 0.2;
 
 	mRotation.mX += 5;
 
