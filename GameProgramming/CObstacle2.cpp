@@ -24,6 +24,7 @@ CObstacle2::CObstacle2()
 	//モデルのポインタ設定
 	mpModel = &mModel;
 	mColSearch.mTag = CCollider::ESEARCH; //タグ設定
+	mTag = ESIRCLEPILLAR;
 }
 
 //コンストラクタ
@@ -41,7 +42,7 @@ CObstacle2::CObstacle2(const CVector& position, const CVector& rotation, const C
 	CTaskManager::Get()->Remove(this); //削除して
 	CTaskManager::Get()->Add(this); //追加する
 
-	mColliderMesh.Set(NULL, &mMatrix, mpModel);
+	mColliderMesh.Set(this, &mMatrix, mpModel);
 }
 
 //更新処理

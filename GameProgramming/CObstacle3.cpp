@@ -21,6 +21,7 @@ CObstacle3::CObstacle3()
 	//モデルのポインタ設定
 	mpModel = &mModel;
 	//mColSearch.mTag = CCollider::ESEARCH; //タグ設定
+	mTag = EBALL;
 }
 
 //コンストラクタ
@@ -38,7 +39,7 @@ CObstacle3::CObstacle3(const CVector& position, const CVector& rotation, const C
 	CTaskManager::Get()->Remove(this); //削除して
 	CTaskManager::Get()->Add(this); //追加する
 
-	mColliderMesh.Set(NULL, &mMatrix, mpModel);
+	mColliderMesh.Set(this, &mMatrix, mpModel);
 }
 
 //更新処理

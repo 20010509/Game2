@@ -21,6 +21,7 @@
 #include"COrnament.h"
 #include"CRoad.h"
 #include"CWall.h"
+#include"CBlockUp.h"
 
 //CSモデル
 CModel mModelIC5;
@@ -55,7 +56,7 @@ void CSceneGame::Init() {
 	new CEnemy2(CVector(-5.0f, 1.0f, -10.0f)*mBackGroundMatrix, CVector(), CVector(0.1f, 0.1f, 0.1f));
 	new CEnemy2(CVector(5.0f, 1.0f, -10.0f)*mBackGroundMatrix, CVector(), CVector(0.1f, 0.1f, 0.1f));
 	*/
-
+	
 	//障害物
 	//下から出るトゲ
 	new CObstacle(CVector(0.0f, -3.75f, 85.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 1.5f, 1.5f));
@@ -104,7 +105,7 @@ void CSceneGame::Init() {
 	new CObstacle4(CVector(0.0f, -1.0f, -40.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.5f, 1.75f));
 	new CObstacle4(CVector(4.0f, -1.0f, -40.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
 	new CObstacle4(CVector(8.0f, -1.0f, -40.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.5f, 1.75f));
-	
+
 	//new CObstacle4(CVector(4.0f, 1.0f, -30.0f)*mBackGroundMatrix, CVector(), CVector(7.0f, 3.5f, 1.0f));
 
 	//壁、天井
@@ -113,7 +114,13 @@ void CSceneGame::Init() {
 	new CWall(CVector(4.0f, 11.0f, 100.0f)*mBackGroundMatrix, CVector(), CVector(9.0f, 1.0f, 300.0f));
 
 	//道
-	//new CRoad(CVector(4.0f, 0.0f, 0.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 1.0f, 50.0f));
+	new CRoad(CVector(4.0f, -1.0f, 190.0f)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 50.0f));
+	new CRoad(CVector(0.0f, -1.0f, 190.0f)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 50.0f));
+	new CRoad(CVector(8.0f, -1.0f, 190.0f)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 50.0f));
+	//ブロックの上に配置
+	new CBlockUp(CVector(0.0f, 2.5f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
+	new CBlockUp(CVector(4.0f, 2.5f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
+	new CBlockUp(CVector(8.0f, 2.5f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
 
 	//ビルボードの作成
 	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);
@@ -124,7 +131,7 @@ void CSceneGame::Init() {
 
 	//背景モデルから三角コライダを生成
 	//親インスタンスと親行列はなし
-	mColliderMesh.Set(NULL, &mBackGroundMatrix, &mBackGround);
+	//mColliderMesh.Set(NULL, &mBackGroundMatrix, &mBackGround);
 }
 
 void CSceneGame::Update() {
@@ -186,7 +193,7 @@ void CSceneGame::Update() {
 	Camera.Set(e, c, u);
 	Camera.Render();
 	
-	mBackGround.Render(mBackGroundMatrix);
+	//mBackGround.Render(mBackGroundMatrix);
 	
 	//タスクリストの削除
 	CTaskManager::Get()->Delete();

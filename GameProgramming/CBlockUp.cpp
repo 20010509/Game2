@@ -1,4 +1,4 @@
-#include "CRoad.h"
+#include "CBlockUp.h"
 #include "CTaskManager.h"
 #include "CCollisionManager.h"
 #include "CEffect.h"
@@ -7,10 +7,10 @@
 #define OBJ "plane.obj" //モデルのファイル
 #define MTL "plane.mtl" //モデルのマテリアルファイル
 
-CModel CRoad::mModel; //モデルデータの作成
+CModel CBlockUp::mModel; //モデルデータの作成
 
 //デフォルトコンストラクタ
-CRoad::CRoad()
+CBlockUp::CBlockUp()
 //: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, -10.0f), 30.0f)
 {
 	//モデルがない時は読み込む
@@ -21,13 +21,13 @@ CRoad::CRoad()
 	//モデルのポインタ設定
 	mpModel = &mModel;
 	//mColSearch.mTag = CCollider::ESEARCH; //タグ設定
-	mTag = EROAD;
+	mTag = EBLOCKUP;
 }
 
 //コンストラクタ
 //CEnemy(位置、回転、拡縮)
-CRoad::CRoad(const CVector& position, const CVector& rotation, const CVector& scale)
-:CRoad()
+CBlockUp::CBlockUp(const CVector& position, const CVector& rotation, const CVector& scale)
+:CBlockUp()
 {
 	//位置、回転、拡縮を設定する
 	mPosition = position; //位置の設定
@@ -43,14 +43,14 @@ CRoad::CRoad(const CVector& position, const CVector& rotation, const CVector& sc
 }
 
 //更新処理
-void CRoad::Update(){
+void CBlockUp::Update(){
 
 	CTransform::Update();
 }
 
 //衝突処理
 //Collider(コライダ1、コライダ2)
-void CRoad::Collision(CCollider *m, CCollider *o){
+void CBlockUp::Collision(CCollider *m, CCollider *o){
 	//相手がサーチの時は戻る
 	if (o->mTag == CCollider::ESEARCH)
 	{
@@ -76,7 +76,7 @@ void CRoad::Collision(CCollider *m, CCollider *o){
 	}
 }
 
-void CRoad::TaskCollision()
+void CBlockUp::TaskCollision()
 {
 	mColSearch.ChangePriority();
 	CCollisionManager::Get()->Collision(&mColSearch, COLLISIONRANGE);

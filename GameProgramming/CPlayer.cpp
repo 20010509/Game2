@@ -13,6 +13,8 @@
 #define INITIALIZE 0			//値を初期化
 #define SIDEMOVECOUNT 9			//隣のレーンへ移動する時間(フレーム)
 #define SLIDINGCOUNT 30			//スライディングの持続時間
+#define INVINCIBLETIME 60		//無敵時間
+#define HP 5					//体力
 
 CPlayer::CPlayer()
 :mLine(this, &mMatrix, CVector(0.0f, 0.0f, -1.0f), CVector(0.0f, 0.0f, 1.0f))
@@ -29,7 +31,10 @@ CPlayer::CPlayer()
 , mSideMoveCount(INITIALIZE)
 , mNowLane(INITIALIZE)
 //, mSurface(INITIALIZE)
-, mHp(INITIALIZE)
+, mHp(HP)
+, mInvincibleTime(INITIALIZE)
+, mInvincibleFlag(false)
+, mBlockUpCollision(false)
 {
 	//テクスチャファイルの読み込み(1行64列)
 	mText.LoadTexture("FontWhite.tga", 1, 64);
@@ -38,6 +43,18 @@ CPlayer::CPlayer()
 
 //更新処理
 void CPlayer::Update(){
+
+	mBlockUpCollision = false;
+
+	//無敵時間を減らす
+	if (mInvincibleTime > 0){
+		mInvincibleTime--;
+	}
+	//無敵時間が0かそれ以下になったら無敵状態を解除する
+	if (mInvincibleTime <= 0){
+		mInvincibleFlag = false;
+	}
+
 	//Aキー入力で左レーンへ移動
 	if (CKey::Once('A') && mNowLane > -1 && mSideMoveFlagR == false && mSideMoveFlagL == false){
 		//Y軸の回転値を増加
@@ -102,21 +119,21 @@ void CPlayer::Update(){
 	mPosition.mY += mJumpPower;
 	mJumpPower -= GRAVITY;
 
-	if (mPosition.mY <= 0){
+	/*if (mPosition.mY <= 0){
 		mPosition.mY += mPosition.mY*-1;
 		mJumpFlag = false;
 		mJumpPower = INITIALIZE;
-	}
+	}*/
 
 	//自動で前方に移動
-	mPosition.mZ -= RUNSPEED;
+	//mPosition.mZ -= RUNSPEED;
 
-	/*if (CKey::Push(VK_UP)){
+	if (CKey::Push(VK_UP)){
 		mPosition.mZ -= RUNSPEED;
 	}
 	if (CKey::Push(VK_DOWN)){
 		mPosition.mZ += RUNSPEED;
-	}*/
+	}
 
 	//上矢印キー入力で前進
 	/*if (CKey::Push(VK_UP)){
@@ -157,17 +174,79 @@ void CPlayer::Update(){
 void CPlayer::Collision(CCollider *m, CCollider *o){
 	//自身のコライダタイプの判定
 	switch (m->mType){
-	case CCollider::ELINE: //線分コライダ
+	case CCollider::ESPHERE: //線分コライダ
 		//相手のコライダが三角コライダの時
 		if (o->mType == CCollider::ETRIANGLE){
+			if (o->mpParent == NULL){
+				return;
+			}
 			CVector adjust; //調整用ベクトル
 			//三角形と線分の衝突判定
-			CCollider::CollisionTriangleLine(o, m, &adjust);
-			//位置の更新(mPosition+adjust)
-			mPosition = mPosition - adjust*-1;
-			//行列の更新
-			CTransform::Update();
-			mHp--;
+			if (CCollider::CollisionTriangleSphere(o, m, &adjust)){
+				//位置の更新(mPosition+adjust)
+				mPosition = mPosition + adjust;
+				//行列の更新
+				CTransform::Update();
+
+				//ブロックの上の面に接地したとき
+				if (o->mpParent->mTag == EBLOCKUP){
+					if (mJumpPower <= 0){
+						mBlockUpCollision = true;
+						mJumpFlag = false;
+						mJumpPower = INITIALIZE;
+					}
+				}
+
+				//接地したとき
+				if (o->mpParent->mTag == EROAD){
+					mJumpFlag = false;
+					mJumpPower = INITIALIZE;
+				}
+
+				//ブロックと当たった時
+				if (o->mpParent->mTag == EBLOCK){
+					if (mInvincibleFlag == false && mBlockUpCollision == false){
+						//ダメージ発生
+						mHp--;
+						//無敵状態に入る
+						mInvincibleFlag = true;
+						mInvincibleTime = INVINCIBLETIME;
+					}
+				}
+
+				//トゲと当たった時
+				if (o->mpParent->mTag == ENEEDLE){
+					if (mInvincibleFlag == false){
+						//ダメージ発生
+						mHp--;
+						//無敵状態に入る
+						mInvincibleFlag = true;
+						mInvincibleTime = INVINCIBLETIME;
+					}
+				}
+
+				//柱と当たった時
+				if (o->mpParent->mTag == ESIRCLEPILLAR){
+					if (mInvincibleFlag == false){
+						//ダメージ発生
+						mHp--;
+						//無敵状態に入る
+						mInvincibleFlag = true;
+						mInvincibleTime = INVINCIBLETIME;
+					}
+				}
+
+				//転がる球と当たった時
+				if (o->mpParent->mTag == EBALL){
+					if (mInvincibleFlag == false){
+						//ダメージ発生
+						mHp--;
+						//無敵状態に入る
+						mInvincibleFlag = true;
+						mInvincibleTime = INVINCIBLETIME;
+					}
+				}
+			}
 		}
 		break;
 	}
@@ -180,12 +259,13 @@ void CPlayer::TaskCollision()
 	mLine.ChangePriority();
 	mLine2.ChangePriority();
 	mLine3.ChangePriority();
+	mCollider.ChangePriority();
+
 	//衝突処理を実行
 	CCollisionManager::Get()->Collision(&mLine, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mLine2, COLLISIONRANGE);
 	CCollisionManager::Get()->Collision(&mLine3, COLLISIONRANGE);
-
-	mCollider.ChangePriority();
+	CCollisionManager::Get()->Collision(&mCollider, COLLISIONRANGE);
 }
 
 void CPlayer::Render()
@@ -221,9 +301,18 @@ void CPlayer::Render()
 	//文字列の描画
 	mText.DrawString(buf, 100, -70, 8, 16);
 
-	sprintf(buf, "%d", mHp);
+	//体力の値を表示
+	sprintf(buf, "HP:%d", mHp);
+	mText.DrawString(buf, 100, -130, 8, 16);
+
+	//無敵時間の表示
+	sprintf(buf, "INVINCIBLETIME:%d", mInvincibleTime);
+	mText.DrawString(buf, 100, -160, 8, 16);
+	/*
+	sprintf(buf, "RX:%7.2f", mPosition.mZ);
 	//文字列の描画
-	mText.DrawString(buf, 100, -30, 8, 16);
+	mText.DrawString(buf, 100, -150, 8, 16);
+	*/
 
 	//2Dの描画終了
 	CUtil::End2D();
