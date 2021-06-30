@@ -78,6 +78,8 @@ void CRoad::Collision(CCollider *m, CCollider *o){
 
 void CRoad::TaskCollision()
 {
+	/*
 	mColSearch.ChangePriority();
 	CCollisionManager::Get()->Collision(&mColSearch, COLLISIONRANGE);
+	*/
 }

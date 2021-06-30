@@ -14,6 +14,7 @@
 #define SIDEMOVECOUNT 9			//隣のレーンへ移動する時間(フレーム)
 #define SLIDINGCOUNT 30			//スライディングの持続時間
 #define INVINCIBLETIME 60		//無敵時間
+#define INVINCIBLETIME_ITEM 300	//無敵時間(アイテム使用)
 #define HP 5					//体力
 
 CPlayer::CPlayer()
@@ -35,6 +36,7 @@ CPlayer::CPlayer()
 , mInvincibleTime(INITIALIZE)
 , mInvincibleFlag(false)
 , mBlockUpCollision(false)
+, mItem(INITIALIZE)
 {
 	//テクスチャファイルの読み込み(1行64列)
 	mText.LoadTexture("FontWhite.tga", 1, 64);
@@ -44,7 +46,12 @@ CPlayer::CPlayer()
 //更新処理
 void CPlayer::Update(){
 
-	mBlockUpCollision = false;
+	//アイテム使用時
+	if (CKey::Once(VK_SPACE) && mItem > 0&&mInvincibleFlag==false){
+		mItem--;
+		mInvincibleFlag = true;
+		mInvincibleTime = INVINCIBLETIME_ITEM;
+	}
 
 	//無敵時間を減らす
 	if (mInvincibleTime > 0){
@@ -166,6 +173,8 @@ void CPlayer::Update(){
 		mNowLane = 0;
 		mJumpPower = INITIALIZE;
 	}
+
+	mBlockUpCollision = false;
 	
 	//CTransformの更新
 	CTransform::Update();
@@ -183,10 +192,18 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 			CVector adjust; //調整用ベクトル
 			//三角形と線分の衝突判定
 			if (CCollider::CollisionTriangleSphere(o, m, &adjust)){
-				//位置の更新(mPosition+adjust)
-				mPosition = mPosition + adjust;
-				//行列の更新
-				CTransform::Update();
+				if (o->mpParent->mTag != EITEM){
+					//位置の更新(mPosition+adjust)
+					mPosition = mPosition + adjust;
+					//行列の更新
+					CTransform::Update();
+				}
+
+				//接地したとき
+				if (o->mpParent->mTag == EROAD){
+					mJumpFlag = false;
+					mJumpPower = INITIALIZE;
+				}
 
 				//ブロックの上の面に接地したとき
 				if (o->mpParent->mTag == EBLOCKUP){
@@ -195,12 +212,6 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 						mJumpFlag = false;
 						mJumpPower = INITIALIZE;
 					}
-				}
-
-				//接地したとき
-				if (o->mpParent->mTag == EROAD){
-					mJumpFlag = false;
-					mJumpPower = INITIALIZE;
 				}
 
 				//ブロックと当たった時
@@ -245,6 +256,14 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 						mInvincibleFlag = true;
 						mInvincibleTime = INVINCIBLETIME;
 					}
+				}
+
+				//アイテムと当たった時
+				if (o->mpParent->mTag == EITEM){
+					//アイテムのストックを増やす
+					mItem++;
+					//アイテムを削除
+					o->mpParent->mEnabled = false;
 				}
 			}
 		}
@@ -308,11 +327,26 @@ void CPlayer::Render()
 	//無敵時間の表示
 	sprintf(buf, "INVINCIBLETIME:%d", mInvincibleTime);
 	mText.DrawString(buf, 100, -160, 8, 16);
-	/*
-	sprintf(buf, "RX:%7.2f", mPosition.mZ);
+
+	sprintf(buf, "RX:%7.2f", mJumpPower);
 	//文字列の描画
-	mText.DrawString(buf, 100, -150, 8, 16);
-	*/
+	mText.DrawString(buf, 100, -190, 8, 16);
+
+	/*if (mBlockUpCollision == true){
+		sprintf(buf, "1");
+		//文字列の描画
+		mText.DrawString(buf, 100, -210, 8, 16);
+	}
+	else{
+		sprintf(buf, "0");
+		//文字列の描画
+		mText.DrawString(buf, 100, -210, 8, 16);
+	}*/
+
+	sprintf(buf, "ITEM:%d", mItem);
+	//文字列の描画
+	mText.DrawString(buf, 100, -220, 8, 16);
+	
 
 	//2Dの描画終了
 	CUtil::End2D();

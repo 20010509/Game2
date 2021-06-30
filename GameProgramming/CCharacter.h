@@ -39,6 +39,7 @@ public:
 		EBALL,			//“]‚ª‚é‹…
 		EROAD,			//“¹
 		EOBSTACLE,		//áŠQ•¨
+		EITEM,			//ƒAƒCƒeƒ€
 	};
 	ETag mTag;
 };

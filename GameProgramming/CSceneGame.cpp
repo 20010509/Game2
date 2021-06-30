@@ -22,6 +22,7 @@
 #include"CRoad.h"
 #include"CWall.h"
 #include"CBlockUp.h"
+#include"CItem.h"
 
 //CSモデル
 CModel mModelIC5;
@@ -114,13 +115,22 @@ void CSceneGame::Init() {
 	new CWall(CVector(4.0f, 11.0f, 100.0f)*mBackGroundMatrix, CVector(), CVector(9.0f, 1.0f, 300.0f));
 
 	//道
-	new CRoad(CVector(4.0f, -1.0f, 190.0f)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 50.0f));
-	new CRoad(CVector(0.0f, -1.0f, 190.0f)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 50.0f));
-	new CRoad(CVector(8.0f, -1.0f, 190.0f)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 50.0f));
+	int Road[10] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+	for (int i = 0; i < 10; i++){
+		if (Road[i] == 1){
+			new CRoad(CVector(4.0f, -1.0f, i*-60.0f + 190)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 30.0f));
+			new CRoad(CVector(0.0f, -1.0f, i*-60.0f + 190)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 30.0f));
+			new CRoad(CVector(8.0f, -1.0f, i*-60.0f + 190)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 30.0f));
+		}
+	}
 	//ブロックの上に配置
 	new CBlockUp(CVector(0.0f, 2.5f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
 	new CBlockUp(CVector(4.0f, 2.5f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
 	new CBlockUp(CVector(8.0f, 2.5f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
+
+	//アイテム配置
+	new CItem(CVector(0.0f, 0.0f, 180.0f)*mBackGroundMatrix, CVector(), CVector(0.5f, 0.5f, 0.5f));
+	new CItem(CVector(0.0f, 0.0f, 150.0f)*mBackGroundMatrix, CVector(), CVector(0.5f, 0.5f, 0.5f));
 
 	//ビルボードの作成
 	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);

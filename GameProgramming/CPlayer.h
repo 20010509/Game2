@@ -34,6 +34,8 @@ private:
 
 	bool mBlockUpCollision;		//ブロックの上の面に乗っているか判断
 
+	int mItem;					//アイテムの所持数
+
 public:
 	//更新処理
 	void Update();
