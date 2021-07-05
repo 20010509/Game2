@@ -13,7 +13,7 @@
 #define INITIALIZE 0			//値を初期化
 #define SIDEMOVECOUNT 9			//隣のレーンへ移動する時間(フレーム)
 #define SLIDINGCOUNT 30			//スライディングの持続時間
-#define INVINCIBLETIME 60		//無敵時間
+#define INVINCIBLETIME 120		//無敵時間
 #define INVINCIBLETIME_ITEM 300	//無敵時間(アイテム使用)
 #define HP 5					//体力
 
@@ -47,7 +47,7 @@ CPlayer::CPlayer()
 void CPlayer::Update(){
 
 	//アイテム使用時
-	if (CKey::Once(VK_SPACE) && mItem > 0&&mInvincibleFlag==false){
+	if (CKey::Once(VK_SPACE) && mItem > 0 && mInvincibleFlag == false){
 		mItem--;
 		mInvincibleFlag = true;
 		mInvincibleTime = INVINCIBLETIME_ITEM;
@@ -104,7 +104,6 @@ void CPlayer::Update(){
 		//Y軸の回転値を増加
 		//mRotation.mX -= 1;
 		mSlidingFlag = true;
-		
 	}
 	if (mSlidingFlag == true){
 		mSlidingCount++;
@@ -192,12 +191,10 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 			CVector adjust; //調整用ベクトル
 			//三角形と線分の衝突判定
 			if (CCollider::CollisionTriangleSphere(o, m, &adjust)){
-				if (o->mpParent->mTag != EITEM){
-					//位置の更新(mPosition+adjust)
-					mPosition = mPosition + adjust;
-					//行列の更新
-					CTransform::Update();
-				}
+				//位置の更新(mPosition+adjust)
+				mPosition = mPosition + adjust;
+				//行列の更新
+				CTransform::Update();
 
 				//接地したとき
 				if (o->mpParent->mTag == EROAD){
@@ -257,12 +254,20 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 						mInvincibleTime = INVINCIBLETIME;
 					}
 				}
-
-				//アイテムと当たった時
-				if (o->mpParent->mTag == EITEM){
-					//アイテムのストックを増やす
+			}
+		}
+		if (o->mType == CCollider::ESPHERE){
+			if (o->mpParent == NULL){
+				return;
+			}
+			//アイテムと当たった時
+			if (o->mpParent->mTag == EITEM){
+				//衝突しているとき
+				if (CCollider::Collision(m, o))
+				{
+					//アイテムの所持数加算
 					mItem++;
-					//アイテムを削除
+					//衝突したアイテムを削除
 					o->mpParent->mEnabled = false;
 				}
 			}

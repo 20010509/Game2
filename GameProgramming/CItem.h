@@ -12,7 +12,6 @@
 */
 class CItem : public CCharacter{
 private:
-	
 
 public:
 	//モデルデータ

@@ -12,7 +12,7 @@ CModel CItem::mModel; //モデルデータの作成
 
 //デフォルトコンストラクタ
 CItem::CItem()
-//: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 1.0f)
+: mCollider(this, &mMatrix, CVector(0.0f, 1.0f, 0.0f), 0.5f)
 {
 	//モデルがない時は読み込む
 	if (mModel.mTriangles.size() == 0)
@@ -21,7 +21,6 @@ CItem::CItem()
 	}
 	//モデルのポインタ設定
 	mpModel = &mModel;
-	mColSearch.mTag = CCollider::ESEARCH; //タグ設定
 	mTag = EITEM;
 }
 
@@ -40,13 +39,13 @@ CItem::CItem(const CVector& position, const CVector& rotation, const CVector& sc
 	CTaskManager::Get()->Remove(this); //削除して
 	CTaskManager::Get()->Add(this); //追加する
 
-	mColliderMesh.Set(this, &mMatrix, mpModel);
+	//mColliderMesh.Set(this, &mMatrix, mpModel);
 }
 
 //更新処理
 void CItem::Update(){
 
-	mRotation.mY += 1.5f;
+	mRotation.mY += 2.0f;
 
 	CTransform::Update();
 }
@@ -60,7 +59,7 @@ void CItem::Collision(CCollider *m, CCollider *o){
 void CItem::TaskCollision()
 {
 	
-	mColSearch.ChangePriority();
+	mCollider.ChangePriority();
 	CCollisionManager::Get()->Collision(&mColSearch, COLLISIONRANGE);
 	
 }

@@ -128,9 +128,13 @@ void CSceneGame::Init() {
 	new CBlockUp(CVector(4.0f, 2.5f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
 	new CBlockUp(CVector(8.0f, 2.5f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
 
+	new CBlockUp(CVector(8.0f, 2.5f, 50.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
+
+	new CBlockUp(CVector(4.0f, 2.5f, -40.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.0f, 1.75f));
+
 	//アイテム配置
-	new CItem(CVector(0.0f, 0.0f, 180.0f)*mBackGroundMatrix, CVector(), CVector(0.5f, 0.5f, 0.5f));
-	new CItem(CVector(0.0f, 0.0f, 150.0f)*mBackGroundMatrix, CVector(), CVector(0.5f, 0.5f, 0.5f));
+	new CItem(CVector(4.0f, 0.0f, 180.0f)*mBackGroundMatrix, CVector(), CVector(0.5f, 0.5f, 0.5f));
+	new CItem(CVector(4.0f, 0.0f, 150.0f)*mBackGroundMatrix, CVector(), CVector(0.5f, 0.5f, 0.5f));
 
 	//ビルボードの作成
 	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);
