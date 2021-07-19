@@ -26,7 +26,7 @@ private:
 
 	//float mSurface;			//めり込んだ分戻す用
 
-	int mHp;
+	int mHp;					//体力
 
 	int mInvincibleTime;		//無敵時間
 
@@ -35,6 +35,18 @@ private:
 	bool mBlockUpCollision;		//ブロックの上の面に乗っているか判断
 
 	int mItem;					//アイテムの所持数
+
+	float mRunSpeed;			//スピード
+
+	bool mGoal;
+
+	bool mCrushFlag;			//潰れているか判断
+
+	int mCrushTime;				//潰れている時間
+
+	bool mRanding;				//接地しているか判断
+
+	bool mBallCollision;	//転がる球と当たっていたらtrueを返す
 
 public:
 	//更新処理

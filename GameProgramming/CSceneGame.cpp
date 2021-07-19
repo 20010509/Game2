@@ -17,12 +17,14 @@
 #include"CObstacle2.h"
 #include"CObstacle3.h"
 #include"CObstacle4.h"
+#include"CObstacle5.h"
 
 #include"COrnament.h"
 #include"CRoad.h"
 #include"CWall.h"
 #include"CBlockUp.h"
 #include"CItem.h"
+#include"CGoal.h"
 
 //CSモデル
 CModel mModelIC5;
@@ -66,9 +68,9 @@ void CSceneGame::Init() {
 
 	//柱
 	//0=倒れない柱　1=倒れる柱
-	int PillarR[13] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	int PillarR[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-	for (int i = 0; i < 13; i++){
+	for (int i = 0; i < 20; i++){
 		if (PillarR[i] == 0){
 			new COrnament(CVector(10.0f, -1.0f, i*-30.0f + 180.0f)*mBackGroundMatrix, CVector(), CVector(1.5f, 2.0f, 1.5f));
 		}
@@ -77,9 +79,9 @@ void CSceneGame::Init() {
 		}
 	}
 
-	int PillarL[13] = { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
+	int PillarL[] = { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-	for (int i = 0; i < 13; i++){
+	for (int i = 0; i < 20; i++){
 		if (PillarL[i] == 0){
 			new COrnament(CVector(-2.0f, -1.0f, i*-30.0f + 180.0f)*mBackGroundMatrix, CVector(0.0f,180.0f,0.0f), CVector(1.5f, 2.0f, 1.5f));
 		}
@@ -91,7 +93,7 @@ void CSceneGame::Init() {
 	//転がってくる球
 	new CObstacle3(CVector(6.0f, 3.0f, -180.0f)*mBackGroundMatrix, CVector(), CVector(4.0f, 4.0f, 4.0f));
 
-	//ブロック
+	//ブロック(ジャンプで避ける)
 	new CObstacle4(CVector(0.0f, -1.0f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
 	new CObstacle4(CVector(4.0f, -1.0f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
 	new CObstacle4(CVector(8.0f, -1.0f, 160.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
@@ -107,20 +109,22 @@ void CSceneGame::Init() {
 	new CObstacle4(CVector(4.0f, -1.0f, -40.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 1.75f, 1.75f));
 	new CObstacle4(CVector(8.0f, -1.0f, -40.0f)*mBackGroundMatrix, CVector(), CVector(1.75f, 4.5f, 1.75f));
 
-	//new CObstacle4(CVector(4.0f, 1.0f, -30.0f)*mBackGroundMatrix, CVector(), CVector(7.0f, 3.5f, 1.0f));
+	//ブロック(スライディングで避ける)
+	//new CObstacle5(CVector(4.0f, 0.0f, -30.0f)*mBackGroundMatrix, CVector(), CVector(7.0f, 3.5f, 1.0f));
 
 	//壁、天井
-	new CWall(CVector(-4.0f, -1.0f, 100.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 6.0f, 300.0f));
-	new CWall(CVector(12.0f, -1.0f, 100.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 6.0f, 300.0f));
-	new CWall(CVector(4.0f, 11.0f, 100.0f)*mBackGroundMatrix, CVector(), CVector(9.0f, 1.0f, 300.0f));
+	new CWall(CVector(-4.0f, -1.0f, 90.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 6.0f, 480.0f));
+	new CWall(CVector(12.0f, -1.0f, 90.0f)*mBackGroundMatrix, CVector(), CVector(1.0f, 6.0f, 480.0f));
+	new CWall(CVector(4.0f, 11.0f, 90.0f)*mBackGroundMatrix, CVector(), CVector(9.0f, 1.0f, 480.0f));
+	
 
 	//道
 	int Road[10] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 	for (int i = 0; i < 10; i++){
 		if (Road[i] == 1){
-			new CRoad(CVector(4.0f, -1.0f, i*-60.0f + 190)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 30.0f));
-			new CRoad(CVector(0.0f, -1.0f, i*-60.0f + 190)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 30.0f));
-			new CRoad(CVector(8.0f, -1.0f, i*-60.0f + 190)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 30.0f));
+			new CRoad(CVector(4.0f, -1.0f, i*-60.0f + 180)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 30.0f));
+			new CRoad(CVector(0.0f, -1.0f, i*-60.0f + 180)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 30.0f));
+			new CRoad(CVector(8.0f, -1.0f, i*-60.0f + 180)*mBackGroundMatrix, CVector(), CVector(2.0f, 1.0f, 30.0f));
 		}
 	}
 	//ブロックの上に配置
@@ -135,6 +139,9 @@ void CSceneGame::Init() {
 	//アイテム配置
 	new CItem(CVector(4.0f, 0.0f, 180.0f)*mBackGroundMatrix, CVector(), CVector(0.5f, 0.5f, 0.5f));
 	new CItem(CVector(4.0f, 0.0f, 150.0f)*mBackGroundMatrix, CVector(), CVector(0.5f, 0.5f, 0.5f));
+
+	//ゴール
+	new CGoal(CVector(4.0f, 0.0f, -360.0f)*mBackGroundMatrix, CVector(), CVector(0.5f, 0.5f, 0.5f));
 
 	//ビルボードの作成
 	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);

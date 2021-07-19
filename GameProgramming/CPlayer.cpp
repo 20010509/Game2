@@ -8,14 +8,19 @@
 
 #define GRAVITY 0.035f			//重力
 #define JUMPPOWER 0.6f			//ジャンプ力
-#define RUNSPEED 0.5f			//前方へ移動するスピード
+#define MAXRUNSPEED 0.5f		//最高速度
 #define SIDEMOVESPEED 0.4f		//横レーンへ移動するスピード
 #define INITIALIZE 0			//値を初期化
-#define SIDEMOVECOUNT 9			//隣のレーンへ移動する時間(フレーム)
+#define SIDEMOVECOUNT 9			//隣のレーンへ移動する時間(フレーム数)
 #define SLIDINGCOUNT 30			//スライディングの持続時間
-#define INVINCIBLETIME 120		//無敵時間
+#define INVINCIBLETIME 60		//無敵時間
 #define INVINCIBLETIME_ITEM 300	//無敵時間(アイテム使用)
 #define HP 5					//体力
+#define ACCELERATION 0.007f		//加速用
+#define CRUSHMAXSPEED 0.25f		//潰れているときの最高速度
+#define CRUSHTIME 120			//潰れている時間
+
+#define RUNSPEED 1.0f
 
 CPlayer::CPlayer()
 :mLine(this, &mMatrix, CVector(0.0f, 0.0f, -1.0f), CVector(0.0f, 0.0f, 1.0f))
@@ -37,6 +42,12 @@ CPlayer::CPlayer()
 , mInvincibleFlag(false)
 , mBlockUpCollision(false)
 , mItem(INITIALIZE)
+, mRunSpeed(INITIALIZE)
+, mGoal(false)
+, mCrushFlag(false)
+, mCrushTime(INITIALIZE)
+, mRanding(false)
+, mBallCollision(false)
 {
 	//テクスチャファイルの読み込み(1行64列)
 	mText.LoadTexture("FontWhite.tga", 1, 64);
@@ -48,7 +59,9 @@ void CPlayer::Update(){
 
 	//アイテム使用時
 	if (CKey::Once(VK_SPACE) && mItem > 0 && mInvincibleFlag == false){
+		//アイテムの所持数を減らす
 		mItem--;
+		//無敵になる
 		mInvincibleFlag = true;
 		mInvincibleTime = INVINCIBLETIME_ITEM;
 	}
@@ -116,11 +129,12 @@ void CPlayer::Update(){
 	}
 
 	//Wキー入力でジャンプ
-	if (CKey::Once('W') && mJumpFlag == false){
+	if (CKey::Once('W') && mJumpFlag == false&&mBallCollision==false){
 		//Y軸の回転値を増加
 		//mRotation.mX += 1;
 		mJumpFlag = true;
 		mJumpPower = JUMPPOWER;
+		mRanding = false;
 	}
 	mPosition.mY += mJumpPower;
 	mJumpPower -= GRAVITY;
@@ -134,13 +148,54 @@ void CPlayer::Update(){
 	//自動で前方に移動
 	//mPosition.mZ -= RUNSPEED;
 
+	/*
 	if (CKey::Push(VK_UP)){
 		mPosition.mZ -= RUNSPEED;
 	}
 	if (CKey::Push(VK_DOWN)){
 		mPosition.mZ += RUNSPEED;
 	}
+	*/
 
+
+	if (mRunSpeed < 0.5&&CKey::Once('E')){
+		mRunSpeed += 0.025;
+	}
+
+	//加速
+	if (mRunSpeed < MAXRUNSPEED&& mGoal == false){
+		mRunSpeed += ACCELERATION;
+	}
+	if (mRunSpeed >= MAXRUNSPEED){
+		mRunSpeed = MAXRUNSPEED;
+	}
+
+	//潰れているとき
+	if (mCrushFlag == true){
+		mScale = CVector(1.0f, 0.25f, 1.0f);
+
+		mRunSpeed = 0.1f;
+
+		mCrushTime--;
+		if (mCrushTime <= 0){
+			mCrushFlag = false;
+			mScale = CVector(1.0f, 1.0f, 1.0f);
+		}
+	}
+
+	//ゴールしたら減速
+	if (mGoal == true){
+		if (mRunSpeed > 0){
+			mRunSpeed -= 0.006f;
+		}
+		if (mRunSpeed <= 0){
+			mRunSpeed = 0;
+		}
+	}
+
+	//前方へ移動
+	mPosition.mZ -= mRunSpeed;
+	
 	//上矢印キー入力で前進
 	/*if (CKey::Push(VK_UP)){
 		//Z軸方向に1進んだ値を回転移動させる
@@ -174,6 +229,7 @@ void CPlayer::Update(){
 	}
 
 	mBlockUpCollision = false;
+	mBallCollision = false;
 	
 	//CTransformの更新
 	CTransform::Update();
@@ -182,7 +238,7 @@ void CPlayer::Update(){
 void CPlayer::Collision(CCollider *m, CCollider *o){
 	//自身のコライダタイプの判定
 	switch (m->mType){
-	case CCollider::ESPHERE: //線分コライダ
+	case CCollider::ESPHERE: //球コライダ
 		//相手のコライダが三角コライダの時
 		if (o->mType == CCollider::ETRIANGLE){
 			if (o->mpParent == NULL){
@@ -191,15 +247,18 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 			CVector adjust; //調整用ベクトル
 			//三角形と線分の衝突判定
 			if (CCollider::CollisionTriangleSphere(o, m, &adjust)){
-				//位置の更新(mPosition+adjust)
-				mPosition = mPosition + adjust;
-				//行列の更新
-				CTransform::Update();
+				if (o->mpParent->mTag != ENEEDLE){
+					//位置の更新(mPosition+adjust)
+					mPosition = mPosition + adjust;
+					//行列の更新
+					CTransform::Update();
+				}
 
 				//接地したとき
 				if (o->mpParent->mTag == EROAD){
 					mJumpFlag = false;
 					mJumpPower = INITIALIZE;
+					mRanding = true;
 				}
 
 				//ブロックの上の面に接地したとき
@@ -213,6 +272,15 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 
 				//ブロックと当たった時
 				if (o->mpParent->mTag == EBLOCK){
+					if (mRunSpeed > 0){
+						//ノックバックする
+						mRunSpeed = INITIALIZE;
+						mRunSpeed = -0.35f;
+					}
+					else{
+						mRunSpeed = INITIALIZE;
+					}
+
 					if (mInvincibleFlag == false && mBlockUpCollision == false){
 						//ダメージ発生
 						mHp--;
@@ -224,17 +292,32 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 
 				//トゲと当たった時
 				if (o->mpParent->mTag == ENEEDLE){
+					mJumpPower = INITIALIZE;
+					mJumpPower += 0.7f;
+					mJumpFlag = true;
+					mRunSpeed = INITIALIZE;
+					mRanding = false;
 					if (mInvincibleFlag == false){
 						//ダメージ発生
 						mHp--;
 						//無敵状態に入る
 						mInvincibleFlag = true;
 						mInvincibleTime = INVINCIBLETIME;
+						
 					}
 				}
 
 				//柱と当たった時
 				if (o->mpParent->mTag == ESIRCLEPILLAR){
+					if (mRunSpeed > 0){
+						//ノックバックする
+						mRunSpeed = INITIALIZE;
+						mRunSpeed = -0.3f;
+					}
+					else{
+						mRunSpeed = INITIALIZE;
+					}
+
 					if (mInvincibleFlag == false){
 						//ダメージ発生
 						mHp--;
@@ -244,18 +327,17 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 					}
 				}
 
-				//転がる球と当たった時
-				if (o->mpParent->mTag == EBALL){
-					if (mInvincibleFlag == false){
-						//ダメージ発生
-						mHp--;
-						//無敵状態に入る
-						mInvincibleFlag = true;
-						mInvincibleTime = INVINCIBLETIME;
+				//ブロック(スライディングで避ける)
+				if (o->mpParent->mTag == EBLOCK2){
+					//位置の更新(mPosition+adjust)
+					mPosition = mPosition + adjust;
+					if (mPosition.mY < 0){
+						mPosition.mY += -mPosition.mY;
 					}
 				}
 			}
 		}
+		//相手のコライダが球の時
 		if (o->mType == CCollider::ESPHERE){
 			if (o->mpParent == NULL){
 				return;
@@ -271,9 +353,54 @@ void CPlayer::Collision(CCollider *m, CCollider *o){
 					o->mpParent->mEnabled = false;
 				}
 			}
+
+			//転がる球と当たった時
+			if (o->mpParent->mTag == EBALL){
+				//衝突しているとき
+				if (CCollider::Collision(m, o))
+				{
+					mBallCollision = true;
+					mJumpPower /= 2;
+
+					//プレイヤーが接地しているとき
+					if (mRanding == true){
+						//潰れる
+						mCrushFlag = true;
+						mCrushTime = CRUSHTIME;
+					}
+					//プレイヤーが接地していないとき
+					else if (mRanding == false){
+						//ノックバックする
+						mRunSpeed = INITIALIZE;
+						mRunSpeed = -0.5f;
+					}
+
+					if (mInvincibleFlag == false){
+						//ダメージ発生
+						mHp--;
+						//無敵状態に入る
+						mInvincibleFlag = true;
+						mInvincibleTime = INVINCIBLETIME;
+						//スピードを0にする
+						mRunSpeed = INITIALIZE;
+					}
+				}
+			}
+
+
+			//ゴールしたとき
+			if (o->mpParent->mTag == EGOAL){
+				//衝突しているとき
+				if (CCollider::Collision(m, o))
+				{
+					mGoal = true;
+				}
+			}
 		}
 		break;
 	}
+	//行列の更新
+	CTransform::Update();
 }
 
 //衝突処理
@@ -351,6 +478,9 @@ void CPlayer::Render()
 	sprintf(buf, "ITEM:%d", mItem);
 	//文字列の描画
 	mText.DrawString(buf, 100, -220, 8, 16);
+
+	sprintf(buf, "SPEED:%6.3f", mRunSpeed);
+	mText.DrawString(buf, 100, -250, 8, 16);
 	
 
 	//2Dの描画終了

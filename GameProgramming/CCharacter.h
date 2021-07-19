@@ -32,14 +32,16 @@ public:
 		EENEMY,			//敵
 		EBULLETPLAYER,	//プレイヤー弾
 		EBULLETENEMY,	//敵弾
-		EBLOCK,			//ブロック
+		EBLOCK,			//ブロック(ジャンプで避ける)
 		EBLOCKUP,		//ブロックの上の面
+		EBLOCK2,		//ブロック(スライディングで避ける)
 		ENEEDLE,		//トゲ
 		ESIRCLEPILLAR,	//柱
 		EBALL,			//転がる球
 		EROAD,			//道
 		EOBSTACLE,		//障害物
 		EITEM,			//アイテム
+		EGOAL,			//ゴール
 	};
 	ETag mTag;
 };
