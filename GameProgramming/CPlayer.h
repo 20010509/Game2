@@ -45,6 +45,8 @@ private:
 
 	bool mInvincibleFlagDummy;
 
+	bool mStart;
+
 public:
 	//XVˆ—
 	void Update();

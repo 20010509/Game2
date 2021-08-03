@@ -48,6 +48,7 @@ CPlayer::CPlayer()
 , mBlockSideCollision(false)
 , mGameOver(false)
 , mInvincibleFlagDummy(false)
+, mStart(false)
 {
 	//テクスチャファイルの読み込み(1行64列)
 	mText.LoadTexture("FontWhite.tga", 1, 64);
@@ -56,6 +57,10 @@ CPlayer::CPlayer()
 
 //更新処理
 void CPlayer::Update(){
+
+	if (CKey::Push(VK_RETURN)){
+		mStart = true;
+	}
 
 	if (mHp <= 0){
 		mGameOver = true;
@@ -160,7 +165,7 @@ void CPlayer::Update(){
 	mJumpPower -= GRAVITY;
 
 	//加速
-	if (mRunSpeed < MAXRUNSPEED&&mGoal == false){
+	if (mRunSpeed < MAXRUNSPEED&&mGoal == false&&mStart==true){
 		mRunSpeed += ACCELERATION;
 	}
 	//スピードが最高速度を超えないようにする
