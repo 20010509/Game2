@@ -1,18 +1,18 @@
-#include "CItem.h"
+#include "CGoalCheck.h"
 #include "CTaskManager.h"
 #include "CCollisionManager.h"
 #include "CEffect.h"
 #include "CBullet.h"
-#include "CKey.h"
 
-#define OBJ "cube.obj" //モデルのファイル
-#define MTL "itme.mtl" //モデルのマテリアルファイル
+#define OBJ "goal.obj" //モデルのファイル
+#define MTL "goal.mtl" //モデルのマテリアルファイル
 
-CModel CItem::mModel; //モデルデータの作成
+CModel CGoalCheck::mModel; //モデルデータの作成
 
 //デフォルトコンストラクタ
-CItem::CItem()
-: mCollider(this, &mMatrix, CVector(0.0f, 1.0f, 0.0f), 0.5f)
+CGoalCheck::CGoalCheck()
+//: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, -10.0f), 30.0f)
+//:mCollider(this, &mMatrix, CVector(0.0f, 1.0f, 0.0f), 1.0f)
 {
 	//モデルがない時は読み込む
 	if (mModel.mTriangles.size() == 0)
@@ -21,13 +21,13 @@ CItem::CItem()
 	}
 	//モデルのポインタ設定
 	mpModel = &mModel;
-	mTag = EITEM;
+	//mColSearch.mTag = CCollider::ESEARCH; //タグ設定
 }
 
 //コンストラクタ
 //CEnemy(位置、回転、拡縮)
-CItem::CItem(const CVector& position, const CVector& rotation, const CVector& scale)
-:CItem()
+CGoalCheck::CGoalCheck(const CVector& position, const CVector& rotation, const CVector& scale)
+:CGoalCheck()
 {
 	//位置、回転、拡縮を設定する
 	mPosition = position; //位置の設定
@@ -38,28 +38,21 @@ CItem::CItem(const CVector& position, const CVector& rotation, const CVector& sc
 	mPriority = 1;
 	CTaskManager::Get()->Remove(this); //削除して
 	CTaskManager::Get()->Add(this); //追加する
-
-	//mColliderMesh.Set(this, &mMatrix, mpModel);
 }
 
 //更新処理
-void CItem::Update(){
-
-	mRotation.mY += 2.0f;
+void CGoalCheck::Update(){
 
 	CTransform::Update();
 }
 
 //衝突処理
 //Collider(コライダ1、コライダ2)
-void CItem::Collision(CCollider *m, CCollider *o){
+void CGoalCheck::Collision(CCollider *m, CCollider *o){
 
 }
 
-void CItem::TaskCollision()
+void CGoalCheck::TaskCollision()
 {
-	
-	mCollider.ChangePriority();
-	CCollisionManager::Get()->Collision(&mCollider, COLLISIONRANGE);
-	
+
 }

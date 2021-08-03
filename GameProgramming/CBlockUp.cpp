@@ -5,7 +5,7 @@
 #include "CBullet.h"
 
 #define OBJ "plane.obj" //モデルのファイル
-#define MTL "plane.mtl" //モデルのマテリアルファイル
+#define MTL "cube.mtl" //モデルのマテリアルファイル
 
 CModel CBlockUp::mModel; //モデルデータの作成
 

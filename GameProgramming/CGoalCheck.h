@@ -1,5 +1,5 @@
-#ifndef COBSTACLE3_H
-#define COBSTACLE3_H
+#ifndef CGOALCHECK_H
+#define CGOALCHECK_H
 //キャラクタクラスのインクルード
 #include "CCharacter.h"
 //コライダクラスのインクルード
@@ -10,18 +10,18 @@
 エネミークラス
 キャラクタクラスを継承
 */
-class CObstacle3 : public CCharacter{
+class CGoalCheck : public CCharacter{
 private:
-	bool mMovingFlag;	//動き出すフラグ
+
 public:
 	//モデルデータ
 	static CModel mModel;
 	//コライダ
-	CCollider mCollider;	//本体用コライダ
+	CCollider mCollider;
 	//コンストラクタ
-	CObstacle3();
+	CGoalCheck();
 	//CEnemy(位置、回転、拡張)
-	CObstacle3(const CVector& position, const CVector& rotation, const CVector& scale);
+	CGoalCheck(const CVector& position, const CVector& rotation, const CVector& scale);
 	//更新処理
 	void Update();
 	//衝突処理

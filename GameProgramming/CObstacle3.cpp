@@ -11,8 +11,9 @@ CModel CObstacle3::mModel; //モデルデータの作成
 
 //デフォルトコンストラクタ
 CObstacle3::CObstacle3()
-: /*mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 30.0f)
-,*/ mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 4.0f)
+:mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, 15.0f), 30.0f)
+,mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 4.0f)
+, mMovingFlag(false)
 {
 	//モデルがない時は読み込む
 	if (mModel.mTriangles.size() == 0)
@@ -22,6 +23,7 @@ CObstacle3::CObstacle3()
 	//モデルのポインタ設定
 	mpModel = &mModel;
 	mColSearch.mTag = CCollider::ESEARCH; //タグ設定
+	mCollider.mTag = CCollider::EBODY; //タグ設定
 	mTag = EBALL;
 }
 
@@ -45,10 +47,14 @@ CObstacle3::CObstacle3(const CVector& position, const CVector& rotation, const C
 
 //更新処理
 void CObstacle3::Update(){
-	
-	mPosition.mZ += 0.1f;
 
-	mRotation.mX += 2.5f;
+	//動き出すフラグがtrueのとき
+	if (mMovingFlag == true){
+		//前進
+		mPosition.mZ += 0.1f;
+		//回転
+		mRotation.mX += 1.5f;
+	}
 
 	CTransform::Update();
 }
@@ -57,7 +63,7 @@ void CObstacle3::Update(){
 //Collider(コライダ1、コライダ2)
 void CObstacle3::Collision(CCollider *m, CCollider *o){
 	//相手がサーチの時は戻る
-	if (o->mTag == CCollider::ESEARCH)
+	if (o->mpParent==NULL)
 	{
 		return;
 	}
@@ -73,7 +79,7 @@ void CObstacle3::Collision(CCollider *m, CCollider *o){
 				//衝突しているとき
 				if (CCollider::Collision(m, o))
 				{
-					
+					mMovingFlag = true;
 				}
 			}
 		}
@@ -83,10 +89,9 @@ void CObstacle3::Collision(CCollider *m, CCollider *o){
 
 void CObstacle3::TaskCollision()
 {
-	/*
 	mColSearch.ChangePriority();
 	CCollisionManager::Get()->Collision(&mColSearch, COLLISIONRANGE);
-	*/
+	
 	mCollider.ChangePriority();
 	CCollisionManager::Get()->Collision(&mCollider, COLLISIONRANGE);
 }

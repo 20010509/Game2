@@ -11,7 +11,7 @@ CModel CObstacle::mModel; //モデルデータの作成
 
 //デフォルトコンストラクタ
 CObstacle::CObstacle()
-: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 30.0f)
+: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 25.0f)
 , mRiseFlag(false)
 , mStopFlag(false)
 , mRiseSpeed(0)
@@ -48,7 +48,7 @@ CObstacle::CObstacle(const CVector& position, const CVector& rotation, const CVe
 //更新処理
 void CObstacle::Update(){
 	if (mRiseFlag == true&&mStopFlag==false){
-		mRiseSpeed += 0.2f;
+		mRiseSpeed += 0.1f;
 		mPosition.mY += mRiseSpeed;
 		if (mPosition.mY >= -1.0f){
 			mStopFlag = true;

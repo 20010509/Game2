@@ -1,18 +1,17 @@
-#include "CGoal.h"
+#include "CBlockSide.h"
 #include "CTaskManager.h"
 #include "CCollisionManager.h"
 #include "CEffect.h"
 #include "CBullet.h"
 
 #define OBJ "plane.obj" //モデルのファイル
-#define MTL "Transparent.mtl" //モデルのマテリアルファイル
+#define MTL "plane.mtl" //モデルのマテリアルファイル
 
-CModel CGoal::mModel; //モデルデータの作成
+CModel CBlockSide::mModel; //モデルデータの作成
 
 //デフォルトコンストラクタ
-CGoal::CGoal()
+CBlockSide::CBlockSide()
 //: mColSearch(this, &mMatrix, CVector(0.0f, 0.0f, -10.0f), 30.0f)
-//:mCollider(this, &mMatrix, CVector(0.0f, 1.0f, 0.0f), 1.0f)
 {
 	//モデルがない時は読み込む
 	if (mModel.mTriangles.size() == 0)
@@ -22,13 +21,13 @@ CGoal::CGoal()
 	//モデルのポインタ設定
 	mpModel = &mModel;
 	//mColSearch.mTag = CCollider::ESEARCH; //タグ設定
-	mTag = EGOAL;
+	mTag = EBLOCKSIDE;
 }
 
 //コンストラクタ
 //CEnemy(位置、回転、拡縮)
-CGoal::CGoal(const CVector& position, const CVector& rotation, const CVector& scale)
-:CGoal()
+CBlockSide::CBlockSide(const CVector& position, const CVector& rotation, const CVector& scale)
+:CBlockSide()
 {
 	//位置、回転、拡縮を設定する
 	mPosition = position; //位置の設定
@@ -44,37 +43,41 @@ CGoal::CGoal(const CVector& position, const CVector& rotation, const CVector& sc
 }
 
 //更新処理
-void CGoal::Update(){
+void CBlockSide::Update(){
 
 	CTransform::Update();
 }
 
 //衝突処理
 //Collider(コライダ1、コライダ2)
-void CGoal::Collision(CCollider *m, CCollider *o){
-	//相手がプレイヤー以外の時は戻る
-	if (o->mpParent->mTag != EPLAYER)
+void CBlockSide::Collision(CCollider *m, CCollider *o){
+	//相手がサーチの時は戻る
+	if (o->mTag == CCollider::ESEARCH)
 	{
 		return;
 	}
-	//自分が球コライダの時
-	if (m->mType == CCollider::ESPHERE)
+	//自分がサーチ用の時
+	if (m->mTag == CCollider::ESEARCH)
 	{
 		//相手が球コライダの時
 		if (o->mType == CCollider::ESPHERE)
 		{
-			//衝突しているとき
-			if (CCollider::Collision(m, o))
+			//相手がプレイヤーの時
+			if (o->mpParent->mTag == EPLAYER)
 			{
-				mEnabled = false;
+				//衝突しているとき
+				if (CCollider::Collision(m, o))
+				{
+
+				}
 			}
 		}
 		return;
 	}
 }
 
-void CGoal::TaskCollision()
+void CBlockSide::TaskCollision()
 {
-	mCollider.ChangePriority();
-	CCollisionManager::Get()->Collision(&mCollider, COLLISIONRANGE);
+	mColSearch.ChangePriority();
+	CCollisionManager::Get()->Collision(&mColSearch, COLLISIONRANGE);
 }

@@ -34,6 +34,7 @@ public:
 		EBULLETENEMY,	//敵弾
 		EBLOCK,			//ブロック(ジャンプで避ける)
 		EBLOCKUP,		//ブロックの上の面
+		EBLOCKSIDE,		//ブロックの横の面
 		EBLOCK2,		//ブロック(スライディングで避ける)
 		ENEEDLE,		//トゲ
 		ESIRCLEPILLAR,	//柱

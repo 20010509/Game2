@@ -84,6 +84,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CBillBoard.cpp" />
+    <ClCompile Include="CBlockSide.cpp" />
     <ClCompile Include="CBlockUp.cpp" />
     <ClCompile Include="CBullet.cpp" />
     <ClCompile Include="CCamera.cpp" />
@@ -97,6 +98,7 @@
     <ClCompile Include="CEnemy.cpp" />
     <ClCompile Include="CEnemy2.cpp" />
     <ClCompile Include="CGoal.cpp" />
+    <ClCompile Include="CGoalCheck.cpp" />
     <ClCompile Include="CItem.cpp" />
     <ClCompile Include="CKey.cpp" />
     <ClCompile Include="CMaterial.cpp" />
@@ -126,6 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CBillBoard.h" />
+    <ClInclude Include="CBlockSide.h" />
     <ClInclude Include="CBlockUp.h" />
     <ClInclude Include="CBullet.h" />
     <ClInclude Include="CCamera.h" />
@@ -139,6 +142,7 @@
     <ClInclude Include="CEnemy.h" />
     <ClInclude Include="CEnemy2.h" />
     <ClInclude Include="CGoal.h" />
+    <ClInclude Include="CGoalCheck.h" />
     <ClInclude Include="CItem.h" />
     <ClInclude Include="CKey.h" />
     <ClInclude Include="CMaterial.h" />
